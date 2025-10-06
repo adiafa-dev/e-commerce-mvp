@@ -1,0 +1,6 @@
+@font-face {
+  font-family: 'SF-Pro'; /* Ganti dengan nama font yang diinginkan */
+  src: url('/assets/fonts/SFPRODISPLAYREGULAR.OTF') format('opentype'); /* Sesuaikan path file */
+  font-weight: normal;
+  font-style: normal;
+}

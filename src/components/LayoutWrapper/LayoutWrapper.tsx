@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Header from '@/components/Header';
+import Footer from '../Footer';
+import Header from '../Header';
 
 const disableSection = ['/login', '/register'];
 
@@ -14,6 +15,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     <>
       {!isHidden && <Header />}
       <main>{children}</main>
+      {!isHidden && <Footer />}
     </>
   );
 }

@@ -33,7 +33,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center h-screen bg-neutral-100">
       <div className="p-6 rounded-xl bg-white w-md shadow-sm max-w-md">
         <div className="flex items-center gap-2.5 mb-5">
-          <Logo sizeWidth={32} />
+          <Link href="/" className="flex gap-2.5">
+            <Logo sizeWidth={32} />
+          </Link>
         </div>
 
         <h2 className="text-2xl font-bold mb-2">Login</h2>

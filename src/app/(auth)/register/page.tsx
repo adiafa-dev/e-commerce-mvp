@@ -33,7 +33,9 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center h-screen bg-neutral-100">
       <div className="p-6 rounded-xl bg-white w-md shadow-sm max-w-md">
         <div className="flex items-center gap-2.5 mb-5">
-          <Logo sizeWidth={32} />
+          <Link href="/" className="flex gap-2.5">
+            <Logo sizeWidth={32} />
+          </Link>
         </div>
 
         <h2 className="text-2xl font-bold mb-2">Register</h2>
@@ -55,7 +57,8 @@ export default function RegisterPage() {
           <div className="hidden">
             <Input label="avatarUrl" {...register('avatarUrl')} value={'https://cdn-icons-png.flaticon.com/512/149/149071.png'} />
           </div>
-          {registerMutation.error && <p className="text-red-500 text-center">{(registerMutation.error as Error).message}</p>}
+
+          {registerMutation.error instanceof Error && <p className="text-red-500 text-center">{registerMutation.error.message}</p>}
 
           <Button type="submit" disabled={registerMutation.isPending} className="h-12 w-full bg-neutral-950 hover:bg-primary rounded-xl font-semibold text-white transition duration-500 cursor-pointer">
             {registerMutation.isPending ? 'Loading...' : 'Register'}

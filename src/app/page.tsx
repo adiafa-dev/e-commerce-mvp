@@ -1,3 +1,11 @@
+import Heroes from '@/components/Heroes';
+import FeaturedProducts from '@/components/sections/FeaturedProducts';
+
 export default function Home() {
-  return <h1>Hello World !</h1>;
+  return (
+    <>
+      <Heroes />
+      <FeaturedProducts />
+    </>
+  );
 }

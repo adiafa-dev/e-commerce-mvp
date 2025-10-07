@@ -7,6 +7,7 @@ export const registerSchema = z
     email: z.string().email('Email tidak valid'),
     password: z.string().min(6, 'Password minimal 6 karakter'),
     confirmPassword: z.string().min(6, 'Konfirmasi password minimal 6 karakter'),
+    avatarUrl: z.string().url(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Password tidak sama',

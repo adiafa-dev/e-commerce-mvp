@@ -8,14 +8,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import { useReviews } from '@/hooks/useReviews';
-import format from 'date-fns/format';
+import { format } from 'date-fns/format';
 import RelatedProducts from '../RelatedProducts';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export default function ProductDetail({ id }: { id: string }) {
   const { data, isLoading, error } = useProductDetail(id);
   const { data: reviewsData, isLoading: loadingReviews } = useReviews(id);
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const router = useRouter();
+  const { user } = useAuth();
 
   if (isLoading)
     return (
@@ -32,6 +37,54 @@ export default function ProductDetail({ id }: { id: string }) {
   const product = data.data;
   const images = product.images?.length ? product.images : ['/assets/images/no-image.png'];
   const currentImage = mainImage || images[0];
+
+  type CartItem = {
+    id: number;
+    title: string;
+    price: number;
+    quantity: number;
+    image: string;
+    shop: {
+      id: number;
+      name: string;
+    };
+  };
+
+  const handleAddToCart = () => {
+    console.log('🟢 Add to Cart clicked!');
+    if (!user) {
+      toast.error('Please login to add items to your cart!');
+      router.push('/login');
+      return;
+    }
+
+    const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    const existing = cart.find((item) => item.id === product.id);
+
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cart.push({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.images?.[0] || '/assets/images/no-image.png',
+        quantity,
+        shop: {
+          id: product.shop.id,
+          name: product.shop.name,
+        },
+      });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    console.log('💾 Saved cart:', cart);
+
+    window.dispatchEvent(new Event('cartUpdated'));
+    console.log('📢 Dispatched cartUpdated event');
+    toast.success(`${product.title} added to cart!`);
+  };
 
   return (
     <section id="prodDetailsWrapper" className="w-full md:w-[1200px] mx-auto py-4 md:py-8 px-4 md:px-0">
@@ -65,10 +118,10 @@ export default function ProductDetail({ id }: { id: string }) {
           </div>
 
           {/* Thumbnail */}
-          <div id="thumbProductWrapper" className="flex w-full overflow-x-auto gap-2 pt-5">
+          <div id="thumbProductWrapper" className="flex w-full gap-1 pt-5 flex-wrap">
             {images.map((img, i) => (
-              <button key={i} onClick={() => setMainImage(img)} className={`group border-2 rounded-2xl overflow-hidden transition duration-500 ${img === currentImage ? 'border-neutral-950' : 'border-transparent hover:border-neutral-950'}`}>
-                <Image src={img} alt={`Thumbnail ${i}`} width={72} height={72} className="w-[72px] h-[72px] object-cover rounded-2xl group-hover:scale-95 transition duration-500" unoptimized />
+              <button key={i} onClick={() => setMainImage(img)} className={`group border-2 rounded-2xl transition duration-500 ${img === currentImage ? 'border-neutral-950' : 'border-transparent hover:border-neutral-950'}`}>
+                <Image src={img} alt={`Thumbnail ${i}`} width={72} height={72} className="aspect-square h-auto object-cover rounded-2xl group-hover:scale-95 transition duration-500" unoptimized />
               </button>
             ))}
           </div>
@@ -116,7 +169,7 @@ export default function ProductDetail({ id }: { id: string }) {
           </div>
 
           {/* Quantity & Add to Cart */}
-          <div className="flex flex-col  items-start gap-5 py-5">
+          <div className="flex flex-col items-start gap-5 py-5">
             <div className="flex items-center gap-10">
               <p className="text-base font-semibold">Quantity</p>
               <div className="flex items-center border border-neutral-300 rounded-xl px-4 py-2 w-fit">
@@ -129,8 +182,13 @@ export default function ProductDetail({ id }: { id: string }) {
                 </button>
               </div>
             </div>
+
             <div className="flex">
-              <Button className="flex items-center justify-center gap-2 bg-black text-white px-20 py-3 rounded-md hover:bg-primary hover:text-black hover:scale-105 duration-500 transition w-full md:w-auto h-10">
+              <Button
+                type="button"
+                onClick={handleAddToCart}
+                className="flex items-center justify-center gap-2 bg-black text-white px-20 py-3 rounded-md hover:bg-primary hover:text-black hover:scale-105 duration-500 transition w-full md:w-auto h-10"
+              >
                 <span className="text-lg">+</span>
                 <span>Add to Cart</span>
               </Button>

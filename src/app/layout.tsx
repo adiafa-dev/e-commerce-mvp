@@ -5,6 +5,7 @@ import './styles/font.css';
 import AppProvider from '@/providers/AppProvider';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { AuthProvider } from '@/context/AuthContext';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,7 +32,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sfPro`}>
         <AuthProvider>
           <AppProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <LayoutWrapper>
+              {children}
+              <Toaster richColors position="top-right" />
+            </LayoutWrapper>
           </AppProvider>
         </AuthProvider>
       </body>

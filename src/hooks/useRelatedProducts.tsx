@@ -11,6 +11,7 @@ type Product = {
   images: string[];
   rating: number;
   reviewCount: number;
+  soldCount: number;
   category: {
     id: number;
     name: string;

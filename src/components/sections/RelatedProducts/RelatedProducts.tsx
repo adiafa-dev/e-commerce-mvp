@@ -49,11 +49,11 @@ export default function RelatedProducts({ categoryId, excludeId }: Props) {
             <p className="text-base font-bold py-1">Rp {item.price.toLocaleString('id-ID')}</p>
             <p className="text-base flex gap-2 items-center text-neutral-700">
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              {item.rating?.toFixed(1) || '0.0'}
+              {item.rating?.toFixed(1) || '0.0'} • {item.soldCount}
             </p>
             <div className="flex gap-3">
               <Image src="/assets/images/icons/verified.svg" alt="verified" width={18} height={18} />
-              <p className="text-base text-neutral-700">{item.shop.name}</p>
+              <p className="text-base text-neutral-700 leading-tight">{item.shop.name}</p>
             </div>
           </div>
         </div>

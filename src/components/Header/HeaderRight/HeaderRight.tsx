@@ -6,50 +6,53 @@ import { Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useCartCount } from '@/hooks/useCartCount';
 
-type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  image?: string;
-  quantity: number;
-};
+// type CartItem = {
+//   id: number;
+//   title: string;
+//   price: number;
+//   image?: string;
+//   quantity: number;
+// };
 
 export default function HeaderRight() {
   const [open, setOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const { user, logout } = useAuth();
+  const cartCount = useCartCount();
 
   // ✅ Ambil cart dari localStorage dan hitung total quantity
-  const calculateCartCount = () => {
-    try {
-      const stored = localStorage.getItem('cart');
-      if (!stored) return 0;
-      const cart: CartItem[] = JSON.parse(stored);
-      return cart.reduce((sum, item) => sum + item.quantity, 0);
-    } catch {
-      return 0;
-    }
-  };
+  // const calculateCartCount = () => {
+  //   try {
+  //     const stored = localStorage.getItem('cart');
+  //     if (!stored) return 0;
+  //     const cart: CartItem[] = JSON.parse(stored);
+  //     return cart.reduce((sum, item) => sum + item.quantity, 0);
+  //   } catch {
+  //     return 0;
+  //   }
+  // };
 
-  // ✅ Update saat mount dan ketika localStorage berubah
-  useEffect(() => {
-    const updateCartCount = () => setCartCount(calculateCartCount());
-    updateCartCount();
+  // // ✅ Update saat mount dan ketika localStorage berubah
+  // useEffect(() => {
+  //   calculateCartCount();
 
-    // 🔥 Dengarkan event perubahan cart
-    window.addEventListener('storage', updateCartCount);
+  //   const updateCartCount = () => setCartCount(calculateCartCount());
+  //   updateCartCount();
 
-    // 🔥 Event custom: supaya bisa update tanpa reload
-    window.addEventListener('cartUpdated', updateCartCount);
+  //   // 🔥 Dengarkan event perubahan cart
+  //   window.addEventListener('storage', updateCartCount);
 
-    return () => {
-      window.removeEventListener('storage', updateCartCount);
-      window.removeEventListener('cartUpdated', updateCartCount);
-    };
-  }, []);
+  //   // 🔥 Event custom: supaya bisa update tanpa reload
+  //   window.addEventListener('cartUpdated', updateCartCount);
+
+  //   return () => {
+  //     window.removeEventListener('storage', updateCartCount);
+  //     window.removeEventListener('cartUpdated', updateCartCount);
+  //   };
+  // }, []);
 
   return (
     <div className="flex items-center justify-end md:justify-center gap-4 md:w-1/4">

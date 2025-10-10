@@ -10,10 +10,12 @@ import { PasswordInput } from '@/components/ui/passwordInput';
 import { Button } from '@/components/ui/button';
 import { useLogin } from '@/hooks/useLogin';
 import Logo from '@/components/Logo';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const loginMutation = useLogin();
+  const { setUser } = useAuth();
 
   const {
     register,
@@ -25,7 +27,25 @@ export default function LoginPage() {
 
   const onSubmit = (data: LoginSchema) => {
     loginMutation.mutate(data, {
-      onSuccess: () => router.push('/'),
+      onSuccess: (response) => {
+        const token = response?.data?.token;
+        const userData = response?.data?.user;
+
+        if (token && userData) {
+          // ✅ Simpan token dan user di localStorage
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify(userData));
+
+          // ✅ Set ke Context agar global state terupdate
+          setUser({
+            name: userData.name,
+            email: userData.email,
+            avatarUrl: userData.avatarUrl || '/assets/images/icons/user.svg',
+          });
+        }
+
+        router.push('/');
+      },
     });
   };
 

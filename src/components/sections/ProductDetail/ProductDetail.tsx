@@ -38,52 +38,43 @@ export default function ProductDetail({ id }: { id: string }) {
   const images = product.images?.length ? product.images : ['/assets/images/no-image.png'];
   const currentImage = mainImage || images[0];
 
-  type CartItem = {
-    id: number;
-    title: string;
-    price: number;
-    quantity: number;
-    image: string;
-    shop: {
-      id: number;
-      name: string;
-    };
-  };
-
-  const handleAddToCart = () => {
-    console.log('🟢 Add to Cart clicked!');
+  const handleAddToCart = async () => {
     if (!user) {
       toast.error('Please login to add items to your cart!');
       router.push('/login');
       return;
     }
 
-    const cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('You must login first!');
+        return;
+      }
 
-    const existing = cart.find((item) => item.id === product.id);
-
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      cart.push({
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.images?.[0] || '/assets/images/no-image.png',
-        quantity,
-        shop: {
-          id: product.shop.id,
-          name: product.shop.name,
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/cart/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({
+          productId: product.id,
+          qty: quantity,
+        }),
       });
+
+      const data = await res.json();
+      console.log('🛒 Add to cart response:', data);
+
+      if (!res.ok || !data.success) throw new Error(data.message || 'Gagal menambahkan ke cart');
+
+      window.dispatchEvent(new Event('cartUpdated'));
+      toast.success(`${product.title} berhasil ditambahkan ke cart!`);
+    } catch (err) {
+      console.error('❌ Add to cart error:', err);
+      toast.error('Gagal menambahkan ke cart');
     }
-
-    localStorage.setItem('cart', JSON.stringify(cart));
-    console.log('💾 Saved cart:', cart);
-
-    window.dispatchEvent(new Event('cartUpdated'));
-    console.log('📢 Dispatched cartUpdated event');
-    toast.success(`${product.title} added to cart!`);
   };
 
   return (
@@ -120,7 +111,7 @@ export default function ProductDetail({ id }: { id: string }) {
           {/* Thumbnail */}
           <div id="thumbProductWrapper" className="flex w-full gap-1 pt-5 flex-wrap">
             {images.map((img, i) => (
-              <button key={i} onClick={() => setMainImage(img)} className={`group border-2 rounded-2xl transition duration-500 ${img === currentImage ? 'border-neutral-950' : 'border-transparent hover:border-neutral-950'}`}>
+              <button key={i} onClick={() => setMainImage(img)} className={`cursor-pointer group border-2 rounded-2xl transition duration-500 ${img === currentImage ? 'border-neutral-950' : 'border-transparent hover:border-neutral-950'}`}>
                 <Image src={img} alt={`Thumbnail ${i}`} width={72} height={72} className="aspect-square h-auto object-cover rounded-2xl group-hover:scale-95 transition duration-500" unoptimized />
               </button>
             ))}
@@ -154,7 +145,14 @@ export default function ProductDetail({ id }: { id: string }) {
           <div className="flex justify-between items-center border-neutral-300 border-b py-5">
             <div className="flex gap-5 items-center max-w-2/3">
               <div className="rounded-full overflow-hidden border-neutral-300 border w-16 aspect-square flex justify-center items-center">
-                <Image src={product.shop.logo} alt={product.shop.name} width={64} height={64} unoptimized className="object-cover" />
+                <Image
+                  src={product.shop.logo && product.shop.logo.trim() !== '' ? product.shop.logo : '/assets/images/icons/store.svg'} // ✅ fallback aman
+                  alt={product.shop.name}
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="object-cover"
+                />
               </div>
               <div className="flex flex-col">
                 <h4 className="text-sm md:text-base font-semibold">{product.shop.name} </h4>
@@ -162,7 +160,7 @@ export default function ProductDetail({ id }: { id: string }) {
               </div>
             </div>
             <div className="w-1/4">
-              <Link href="/product" className="flex items-center justify-center px-2 md:px-12 gap-2.5 text-sm border-neutral-300 border rounded-md hover:bg-primary transition duration-500 h-12">
+              <Link href="/product" className="cursor-pointer flex items-center justify-center px-2 md:px-12 gap-2.5 text-sm border-neutral-300 border rounded-md hover:bg-primary transition duration-500 h-12">
                 <span className="md:block text-base font-semibold text-center">See Store</span>
               </Link>
             </div>
@@ -187,7 +185,7 @@ export default function ProductDetail({ id }: { id: string }) {
               <Button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex items-center justify-center gap-2 bg-black text-white px-20 py-3 rounded-md hover:bg-primary hover:text-black hover:scale-105 duration-500 transition w-full md:w-auto h-10"
+                className="cursor-pointer flex items-center justify-center gap-2 bg-black text-white px-20 py-3 rounded-md hover:bg-primary hover:text-black hover:scale-105 duration-500 transition w-full md:w-auto h-10"
               >
                 <span className="text-lg">+</span>
                 <span>Add to Cart</span>

@@ -127,7 +127,7 @@ export default function FeaturedProducts({ filters, sortOption = 'latest', onCou
             variant="outline"
             disabled={page <= 1 || isFetching}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="h-10 border border-neutral-300 text-neutral-950 rounded-xl font-semibold hover:bg-primary hover:scale-105 transition duration-500"
+            className="cursor-pointer h-10 border border-neutral-300 text-neutral-950 rounded-xl font-semibold hover:bg-primary hover:scale-105 transition duration-500"
           >
             Prev
           </Button>
@@ -140,7 +140,9 @@ export default function FeaturedProducts({ filters, sortOption = 'latest', onCou
                 variant={page === pageNumber ? 'default' : 'outline'}
                 onClick={() => setPage(pageNumber)}
                 disabled={isFetching}
-                className={`w-10 h-10 rounded-xl font-semibold ${page === pageNumber ? 'bg-neutral-950 text-white hover:bg-primary hover:text-black' : 'border border-neutral-300 text-neutral-950 hover:bg-primary transition duration-500'}`}
+                className={`cursor-pointer w-10 h-10 rounded-xl font-semibold ${
+                  page === pageNumber ? 'bg-neutral-950 text-white hover:bg-primary hover:text-black' : 'border border-neutral-300 text-neutral-950 hover:bg-primary transition duration-500'
+                }`}
               >
                 {pageNumber}
               </Button>
@@ -151,7 +153,7 @@ export default function FeaturedProducts({ filters, sortOption = 'latest', onCou
             variant="outline"
             disabled={page >= totalPages || isFetching}
             onClick={() => setPage((p) => p + 1)}
-            className="h-10 border border-neutral-300 text-neutral-950 rounded-xl font-semibold hover:bg-primary hover:scale-105 transition duration-500"
+            className="cursor-pointer h-10 border border-neutral-300 text-neutral-950 rounded-xl font-semibold hover:bg-primary hover:scale-105 transition duration-500"
           >
             Next
           </Button>
